@@ -16,9 +16,23 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization', 'token']
 }))
 
+// Add request logging
+app.use((req, res, next) => {
+  console.log(`${req.method} ${req.path} - ${req.originalUrl}`)
+  next()
+})
+
 // Connect to MongoDB (only in production)
 if (process.env.NODE_ENV === 'production') {
-  connectDB()
+  try {
+    if (!process.env.MONGODB_URL) {
+      console.error('MONGODB_URL environment variable is not set')
+    } else {
+      connectDB()
+    }
+  } catch (error) {
+    console.error('Failed to connect to MongoDB:', error)
+  }
 }
 
 // Test routes
@@ -28,6 +42,15 @@ app.get('/api', (req, res) => {
 
 app.get('/', (req, res) => {
     res.json({ message: 'API Working', status: 'success' })
+})
+
+app.get('/health', (req, res) => {
+    res.json({ 
+        message: 'Server is running', 
+        status: 'success',
+        env: process.env.NODE_ENV,
+        hasMongoUrl: !!process.env.MONGODB_URL
+    })
 })
 
 // API routes
