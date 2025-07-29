@@ -9,42 +9,16 @@ const app = express()
 
 // Middleware
 app.use(express.json())
-
-// CORS configuration
-const corsOptions = {
-  origin: [
-    'https://image-g-mauve.vercel.app',
-    'http://localhost:5173',
-    'http://localhost:3000'
-  ],
+app.use(cors({
+  origin: true,
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'token', 'X-Requested-With'],
-  optionsSuccessStatus: 200 // Some legacy browsers choke on 204
-}
-
-app.use(cors(corsOptions))
-
-// Handle preflight requests
-app.options('*', cors(corsOptions))
-
-// Add request logging
-app.use((req, res, next) => {
-  console.log(`${req.method} ${req.path} - ${req.originalUrl}`)
-  next()
-})
+  allowedHeaders: ['Content-Type', 'Authorization', 'token']
+}))
 
 // Connect to MongoDB (only in production)
 if (process.env.NODE_ENV === 'production') {
-  try {
-    if (!process.env.MONGODB_URL) {
-      console.error('MONGODB_URL environment variable is not set')
-    } else {
-      connectDB()
-    }
-  } catch (error) {
-    console.error('Failed to connect to MongoDB:', error)
-  }
+  connectDB()
 }
 
 // Test routes
@@ -54,15 +28,6 @@ app.get('/api', (req, res) => {
 
 app.get('/', (req, res) => {
     res.json({ message: 'API Working', status: 'success' })
-})
-
-app.get('/health', (req, res) => {
-    res.json({ 
-        message: 'Server is running', 
-        status: 'success',
-        env: process.env.NODE_ENV,
-        hasMongoUrl: !!process.env.MONGODB_URL
-    })
 })
 
 // API routes
