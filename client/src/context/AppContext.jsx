@@ -11,7 +11,7 @@ const AppContextProvider = (props) => {
   const [token, setToken] = useState(localStorage.getItem("token"));
   const [credit, setCredit] = useState(0);
 
-  const backendUrl = import.meta.env.VITE_BACKEND_URL || (import.meta.env.PROD ? "/api" : "http://localhost:4000");
+  const backendUrl = import.meta.env.VITE_BACKEND_URL || (import.meta.env.PROD ? "https://image-g-backend.vercel.app" : "http://localhost:4000");
 
   const navigate = useNavigate();
 
